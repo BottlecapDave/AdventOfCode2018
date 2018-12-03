@@ -15,7 +15,7 @@ namespace AdventOfCode2018
 
         public int PartOne(params int[] numbers)
         {
-            return numbers.Aggregate((current, next) => current + next);
+            return numbers.Sum();
         }
 
         public int PartTwo(string filePath)
