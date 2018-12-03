@@ -37,5 +37,57 @@ namespace AdventOfCode2018
 
             return numberOfTwoLetters * numberOfThreeLetters;
         }
+
+
+        public string PartTwo(string filePath)
+        {
+            var values = File.ReadLines(filePath).ToArray();
+            return PartTwo(values);
+        }
+
+        public string PartTwo(params string[] values)
+        {
+            foreach (var currentValue in values)
+            {
+                foreach (var comparisonValue in values)
+                {
+                    // Skip the value we're currently looking at
+                    if (String.Equals(currentValue, comparisonValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    if (Compare(currentValue, comparisonValue, out string commonCharacters))
+                    {
+                        return commonCharacters;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private bool Compare(string currentValue, string comparisonValue, out string commonCharacters)
+        {
+            commonCharacters = String.Empty;
+            var numberOfUncommonCharacters = 0;
+            for (var index = 0; index < currentValue.Length; index++)
+            {
+                if (comparisonValue[index] == currentValue[index])
+                {
+                    commonCharacters = $"{commonCharacters}{currentValue[index]}";
+                }
+                else if (numberOfUncommonCharacters < 1)
+                {
+                    numberOfUncommonCharacters++;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return numberOfUncommonCharacters == 1;
+        }
     }
 }
