@@ -51,43 +51,9 @@ namespace AdventOfCode2018
 
         public long PartOne(params string[] values)
         {
-            var events = ProcessEvents(values);
+            var events = ExtractEvents(values);
 
-            var guardAsleepDictionary = new Dictionary<long, SleepingPattern>();
-            long? currentGuardId = null;
-            DateTime? currentFellAsleep = null;
-
-            foreach (var shiftEvent in events)
-            {
-                switch (shiftEvent.Type)
-                {
-                    case EventType.ShiftStart:
-                        currentGuardId = shiftEvent.GuardId;
-                        break;
-                    case EventType.FellAsleep:
-                        currentFellAsleep = shiftEvent.Timestamp;
-                        break;
-                    case EventType.WokeUp:
-
-                        if (guardAsleepDictionary.TryGetValue(currentGuardId.Value, out SleepingPattern pattern) == false)
-                        {
-                            pattern = new SleepingPattern(currentGuardId.Value);
-                            guardAsleepDictionary.Add(currentGuardId.Value, pattern);
-                        }
-
-                        var totalMinutes = 0;
-                        while (currentFellAsleep < shiftEvent.Timestamp)
-                        {
-                            pattern.TimesPerMinute[currentFellAsleep.Value.Minute]++;
-                            currentFellAsleep = currentFellAsleep.Value.AddMinutes(1);
-                            totalMinutes++;
-                        }
-
-                        pattern.TotalMinutes += totalMinutes;
-                        break;
-                }
-
-            }
+            var guardAsleepDictionary = ProcessEvents(events);
 
             // Find our star guard and see which day would be best
             var targetGuard = guardAsleepDictionary.Values.OrderByDescending(x => x.TotalMinutes).FirstOrDefault();
@@ -106,7 +72,36 @@ namespace AdventOfCode2018
             return targetMinute * targetGuard.GuardId;
         }
 
-        private IEnumerable<ShiftEvent> ProcessEvents(string[] values)
+        public long PartTwo(string filePath)
+        {
+            var values = File.ReadLines(filePath).ToArray();
+            return PartTwo(values);
+        }
+
+        public long PartTwo(params string[] values)
+        {
+            var events = ExtractEvents(values);
+
+            var guardAsleepDictionary = ProcessEvents(events);
+
+            // Find our star guard and see which day would be best
+            var targetGuard = guardAsleepDictionary.Values.OrderByDescending(x => x.TimesPerMinute.Max()).FirstOrDefault();
+
+            long maxMinutes = 0;
+            var targetMinute = 0;
+            for (var i = 0; i < targetGuard.TimesPerMinute.Length; i++)
+            {
+                if (targetGuard.TimesPerMinute[i] > maxMinutes)
+                {
+                    maxMinutes = targetGuard.TimesPerMinute[i];
+                    targetMinute = i;
+                }
+            }
+
+            return targetMinute * targetGuard.GuardId;
+        }
+
+        private IEnumerable<ShiftEvent> ExtractEvents(string[] values)
         {
             var events = new List<ShiftEvent>();
 
@@ -158,6 +153,46 @@ namespace AdventOfCode2018
             events.Sort((first, second) => first.Timestamp.CompareTo(second.Timestamp));
 
             return events;
+        }
+
+        private Dictionary<long, SleepingPattern> ProcessEvents(IEnumerable<ShiftEvent> events)
+        {
+            var guardAsleepDictionary = new Dictionary<long, SleepingPattern>();
+            long? currentGuardId = null;
+            DateTime? currentFellAsleep = null;
+
+            foreach (var shiftEvent in events)
+            {
+                switch (shiftEvent.Type)
+                {
+                    case EventType.ShiftStart:
+                        currentGuardId = shiftEvent.GuardId;
+                        break;
+                    case EventType.FellAsleep:
+                        currentFellAsleep = shiftEvent.Timestamp;
+                        break;
+                    case EventType.WokeUp:
+
+                        if (guardAsleepDictionary.TryGetValue(currentGuardId.Value, out SleepingPattern pattern) == false)
+                        {
+                            pattern = new SleepingPattern(currentGuardId.Value);
+                            guardAsleepDictionary.Add(currentGuardId.Value, pattern);
+                        }
+
+                        var totalMinutes = 0;
+                        while (currentFellAsleep < shiftEvent.Timestamp)
+                        {
+                            pattern.TimesPerMinute[currentFellAsleep.Value.Minute]++;
+                            currentFellAsleep = currentFellAsleep.Value.AddMinutes(1);
+                            totalMinutes++;
+                        }
+
+                        pattern.TotalMinutes += totalMinutes;
+                        break;
+                }
+            }
+
+            return guardAsleepDictionary;
         }
     }
 }
