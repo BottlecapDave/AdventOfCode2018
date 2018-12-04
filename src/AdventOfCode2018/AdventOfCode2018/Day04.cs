@@ -43,13 +43,13 @@ namespace AdventOfCode2018
         public readonly Regex _fallsAsleepShiftRegex = new Regex("^\\[(?<time>[^\\]]+)\\] falls asleep$");
         public readonly Regex _wakesUpShiftRegex = new Regex("^\\[(?<time>[^\\]]+)\\] wakes up$");
 
-        public int PartOne(string filePath)
+        public long PartOne(string filePath)
         {
             var values = File.ReadLines(filePath).ToArray();
             return PartOne(values);
         }
 
-        public int PartOne(params string[] values)
+        public long PartOne(params string[] values)
         {
             var events = ProcessEvents(values);
 
@@ -79,7 +79,7 @@ namespace AdventOfCode2018
                         while (currentFellAsleep < shiftEvent.Timestamp)
                         {
                             pattern.TimesPerMinute[currentFellAsleep.Value.Minute]++;
-                            currentFellAsleep.Value.AddMinutes(1);
+                            currentFellAsleep = currentFellAsleep.Value.AddMinutes(1);
                             totalMinutes++;
                         }
 
@@ -89,7 +89,21 @@ namespace AdventOfCode2018
 
             }
 
+            // Find our star guard and see which day would be best
             var targetGuard = guardAsleepDictionary.Values.OrderBy(x => x.TotalMinutes).FirstOrDefault();
+
+            long maxMinutes = 0;
+            var targetMinute = 0;
+            for (var i = 0; i < targetGuard.TimesPerMinute.Length; i++)
+            {
+                if (targetGuard.TimesPerMinute[i] > maxMinutes)
+                {
+                    maxMinutes = targetGuard.TimesPerMinute[i];
+                    targetMinute = i;
+                }
+            }
+
+            return targetMinute * targetGuard.GuardId;
         }
 
         private IEnumerable<ShiftEvent> ProcessEvents(string[] values)
