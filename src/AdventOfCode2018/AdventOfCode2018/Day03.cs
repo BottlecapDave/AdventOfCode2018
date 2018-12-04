@@ -78,6 +78,8 @@ namespace AdventOfCode2018
                             overlappedAreas.Add(space);
                         }
 
+                        // If we have more than 1 id on the space, then it means that all ids on this space are overlapping. This means
+                        // we don't want to include any of the ids in our untouched ids collection as they are no longer applicable.
                         if (ids.Count > 1)
                         {
                             allAreasUntouched = false;
@@ -86,6 +88,8 @@ namespace AdventOfCode2018
                     }
                 }
 
+                // If all spaces associated with our id have not overlapped with anything else (at this time), then add the id
+                // to our collection of untouched ids.
                 if (allAreasUntouched)
                 {
                     untouchedIdsHash.Add(id);
