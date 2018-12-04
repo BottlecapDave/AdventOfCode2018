@@ -18,8 +18,29 @@ namespace AdventOfCode2018
 
         public int PartOne(params string[] values)
         {
+            Compare(out List<KeyValuePair<long, long>> overlappedAreas, out List<long> untouchedIds, values);
+            return overlappedAreas.Count;
+        }
+
+        public IEnumerable<long> PartTwo(string filePath)
+        {
+            var values = File.ReadLines(filePath).ToArray();
+            return PartTwo(values);
+        }
+
+        public IEnumerable<long> PartTwo(params string[] values)
+        {
+            Compare(out List<KeyValuePair<long, long>> overlappedAreas, out List<long> untouchedIds, values);
+            return untouchedIds;
+        }
+
+        private void Compare(out List<KeyValuePair<long, long>> overlappedAreas, out List<long> untouchedIds, params string[] values)
+        {
             var gridContent = new Dictionary<KeyValuePair<long, long>, List<long>>();
-            var overlappedAreas = new List<KeyValuePair<long, long>>();
+            overlappedAreas = new List<KeyValuePair<long, long>>();
+            untouchedIds = new List<long>();
+
+            var untouchedIdsHash = new HashSet<long>();
 
             foreach (var value in values)
             {
@@ -35,6 +56,7 @@ namespace AdventOfCode2018
                 var width = Int64.Parse(match.Groups["width"].Value);
                 var height = Int64.Parse(match.Groups["height"].Value);
 
+                bool allAreasUntouched = true;
                 for (int i = 0; i < width; i++)
                 {
                     for (int j = 0; j < height; j++)
@@ -55,11 +77,22 @@ namespace AdventOfCode2018
                         {
                             overlappedAreas.Add(space);
                         }
+
+                        if (ids.Count > 1)
+                        {
+                            allAreasUntouched = false;
+                            ids.ForEach(currentId => untouchedIdsHash.Remove(currentId));
+                        }
                     }
+                }
+
+                if (allAreasUntouched)
+                {
+                    untouchedIdsHash.Add(id);
                 }
             }
 
-            return overlappedAreas.Count;
+            untouchedIds.AddRange(untouchedIdsHash);
         }
     }
 }
