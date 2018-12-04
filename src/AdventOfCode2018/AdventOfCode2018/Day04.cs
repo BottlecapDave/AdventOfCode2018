@@ -90,7 +90,7 @@ namespace AdventOfCode2018
             }
 
             // Find our star guard and see which day would be best
-            var targetGuard = guardAsleepDictionary.Values.OrderBy(x => x.TotalMinutes).FirstOrDefault();
+            var targetGuard = guardAsleepDictionary.Values.OrderByDescending(x => x.TotalMinutes).FirstOrDefault();
 
             long maxMinutes = 0;
             var targetMinute = 0;
