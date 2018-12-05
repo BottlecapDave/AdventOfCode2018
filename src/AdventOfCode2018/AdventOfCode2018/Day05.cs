@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace AdventOfCode2018
 {
@@ -42,13 +43,13 @@ namespace AdventOfCode2018
 
         public long PartTwo(string value)
         {
+            // Determine the characters that we'll be checking for, instead of just checking through the entire alphabet.
+            var distinctValues = value.Distinct().ToArray();
+
             var shortestPolymer = Int64.MaxValue;
-            var aAsInt = (int)'A';
-            var zAsInt = (int)'Z';
-            for (int characterInt = aAsInt; characterInt <= zAsInt; characterInt++)
+            foreach (var characterToIgnore in distinctValues)
             {
-                var character = ((char)characterInt).ToString();
-                var newValue = value.Replace(character.ToUpper(), "").Replace(character.ToLower(), "");
+                var newValue = value.Replace(characterToIgnore.ToString().ToUpper(), "").Replace(characterToIgnore.ToString().ToLower(), "");
                 var polymerValue = PartOne(newValue);
                 if (polymerValue < shortestPolymer)
                 {
