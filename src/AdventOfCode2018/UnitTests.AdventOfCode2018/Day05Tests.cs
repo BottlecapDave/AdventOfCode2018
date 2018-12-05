@@ -29,7 +29,7 @@ namespace UnitTests.AdventOfCode2018
             var result = eval.PartOneWithFile("TestData/05.txt");
 
             // Assert
-            Assert.Equal(9371, result);
+            Assert.Equal(9370, result);
         }
     }
 }
