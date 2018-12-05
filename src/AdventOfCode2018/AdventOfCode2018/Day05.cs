@@ -33,5 +33,30 @@ namespace AdventOfCode2018
 
             return currentCharacters.Count;
         }
+
+        public long PartTwoWithFile(string filePath)
+        {
+            var value = File.ReadAllText(filePath);
+            return PartTwo(value.Trim());
+        }
+
+        public long PartTwo(string value)
+        {
+            var shortestPolymer = Int64.MaxValue;
+            var aAsInt = (int)'A';
+            var zAsInt = (int)'Z';
+            for (int characterInt = aAsInt; characterInt <= zAsInt; characterInt++)
+            {
+                var character = ((char)characterInt).ToString();
+                var newValue = value.Replace(character.ToUpper(), "").Replace(character.ToLower(), "");
+                var polymerValue = PartOne(newValue);
+                if (polymerValue < shortestPolymer)
+                {
+                    shortestPolymer = polymerValue;
+                }
+            }
+
+            return shortestPolymer;
+        }
     }
 }

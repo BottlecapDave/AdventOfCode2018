@@ -31,5 +31,31 @@ namespace UnitTests.AdventOfCode2018
             // Assert
             Assert.Equal(9370, result);
         }
+
+        [Fact]
+        public void PartTwo_When_ExampleOne_Then_ResultIsExampleAnswer()
+        {
+            // Arrange
+            var eval = new Day05();
+
+            // Act
+            var result = eval.PartTwo("dabAcCaCBAcCcaDA");
+
+            // Assert
+            Assert.Equal(4, result);
+        }
+
+        [Fact]
+        public void PartTwo_When_ExampleFile_Then_ResultIsAnswer()
+        {
+            // Arrange
+            var eval = new Day05();
+
+            // Act
+            var result = eval.PartTwoWithFile("TestData/05.txt");
+
+            // Assert
+            Assert.Equal(6390, result);
+        }
     }
 }
